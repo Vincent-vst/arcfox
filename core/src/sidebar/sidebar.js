@@ -7,15 +7,15 @@ const newTabButton = document.getElementById("new-tab-button");
 const searchIcon = document.querySelector('.address-bar i');
 
 // Add event listeners
-newTabButton.addEventListener("click", function() {
+newTabButton.addEventListener("click", function () {
   browser.tabs.create({});
   initTabSidebarControl();
 });
 
 // Browser-control
 function handleBrowserControl(id) {
-  browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {
-  let activeTab = tabs[0];
+  browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+    let activeTab = tabs[0];
     if (id == 'back') {
       browser.tabs.goBack(activeTab.id);
     } else if (id == 'front') {
@@ -25,7 +25,7 @@ function handleBrowserControl(id) {
     }
   });
 
-  browser.windows.getCurrent({populate: true}).then((window) => {
+  browser.windows.getCurrent({ populate: true }).then((window) => {
     if (id == 'close') {
       browser.windows.remove(window.id);
     } else if (id == 'size') {
@@ -35,44 +35,44 @@ function handleBrowserControl(id) {
         browser.windows.update(window.id, { state: 'maximized' });
       }
     } else if (id == 'hide') {
-      browser.windows.update(window.id, {state: "minimized"});
+      browser.windows.update(window.id, { state: "minimized" });
     }
   });
 }
 
-document.getElementById("back").addEventListener("click", function() {
+document.getElementById("back").addEventListener("click", function () {
   handleBrowserControl("back");
 });
 
-document.getElementById("front").addEventListener("click", function() {
+document.getElementById("front").addEventListener("click", function () {
   handleBrowserControl("front");
 });
 
-document.getElementById("refresh").addEventListener("click", function() {
+document.getElementById("refresh").addEventListener("click", function () {
   handleBrowserControl("refresh");
 });
 
-document.getElementById("close").addEventListener("click", function() {
+document.getElementById("close").addEventListener("click", function () {
   handleBrowserControl("close");
 });
 
-document.getElementById("size").addEventListener("click", function() {
+document.getElementById("size").addEventListener("click", function () {
   handleBrowserControl("size");
 });
 
-document.getElementById("hide").addEventListener("click", function() {
+document.getElementById("hide").addEventListener("click", function () {
   handleBrowserControl("hide");
 });
 
-document.getElementById("back").addEventListener("click", function() {
+document.getElementById("back").addEventListener("click", function () {
   handleBrowserControl("back");
 });
 
-document.getElementById("front").addEventListener("click", function() {
+document.getElementById("front").addEventListener("click", function () {
   handleBrowserControl("front");
 });
 
-document.getElementById("refresh").addEventListener("click", function() {
+document.getElementById("refresh").addEventListener("click", function () {
   handleBrowserControl("refresh");
 });
 
@@ -84,7 +84,7 @@ document.addEventListener("click", (event) => {
 
 // Search
 function updateSearchBar() {
-  browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {
+  browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
     const currentTab = tabs[0];
     const currentUrl = currentTab.url;
     const previousIcon = document.querySelector('#search-icon');
@@ -130,9 +130,21 @@ function searchBar() {
     const currentTab = tabs[0];
     let url;
 
-    if (query.startsWith("http://") || query.startsWith("https://") || query.startsWith("about:")) {
-      url = query;
-    } else {
+    const isValidUrl = urlString => {
+      var urlPattern = new RegExp('^(https?:\\/\\/)?' + // validate protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // validate domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // validate OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // validate port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // validate query string
+        '(\\#[-a-z\\d_]*)?$', 'i'); // validate fragment locator
+      return !!urlPattern.test(urlString);
+    }
+
+    if (isValidUrl(query)){
+      if (!(query.startsWith('http'))){
+        url = "https://" +query; 
+      }else{url=query; }
+    }else {
       url = "https://www.google.com/search?q=" + encodeURIComponent(query);
     }
 
@@ -141,7 +153,7 @@ function searchBar() {
   });
 }
 
-searchInput.addEventListener("keydown", function(event) {
+searchInput.addEventListener("keydown", function (event) {
   if (event.key === "Enter") {
     searchBar();
   }
@@ -233,19 +245,19 @@ function initTabSidebarControl() {
     if (newActiveTab) {
       newActiveTab.classList.add('active');
     }
-  
+
     e.currentTarget.classList.add('current-tab');
   };
-  
+
   function createFloatingDiv() {
     const floatingDiv = document.createElement("div");
     floatingDiv.classList.add("floating-div");
-  
+
     const button = document.createElement("button");
     button.innerHTML = '<i class="fa-regular fa-square-plus"></i> New Tab';
     button.classList.add('floating-button');
-  
-    button.addEventListener("click", function() {
+
+    button.addEventListener("click", function () {
       browser.tabs.create({});
       initTabSidebarControl();
     });
@@ -253,8 +265,8 @@ function initTabSidebarControl() {
     const secondbutton = document.createElement("button");
     secondbutton.innerHTML = '<i class="fa-regular fa-folder"></i> New Folder (coming soon)';
     secondbutton.classList.add('floating-button');
-  
-    secondbutton.addEventListener("click", function() {
+
+    secondbutton.addEventListener("click", function () {
       browser.tabs.create({});
       initTabSidebarControl();
     });
@@ -262,8 +274,8 @@ function initTabSidebarControl() {
     const thirdbutton = document.createElement("button");
     thirdbutton.innerHTML = '<i class="fa-brands fa-codepen"></i> New Pen';
     thirdbutton.classList.add('floating-button');
-  
-    thirdbutton.addEventListener("click", function() {
+
+    thirdbutton.addEventListener("click", function () {
       const codepenUrl = "https://codepen.io/pen/define";
       const options = {
         url: codepenUrl,
@@ -271,34 +283,34 @@ function initTabSidebarControl() {
       };
       browser.tabs.create(options);
       initTabSidebarControl();
-    });  
+    });
 
     const fourthbutton = document.createElement("button");
     fourthbutton.innerHTML = '<i class="fa-regular fa-note-sticky"></i> New Notion';
     fourthbutton.classList.add('floating-button');
-  
-    fourthbutton.addEventListener("click", function() {
+
+    fourthbutton.addEventListener("click", function () {
       const newPageUrl = "https://www.notion.so/?newPage";
       browser.tabs.create({ url: newPageUrl });
       initTabSidebarControl();
-    });    
+    });
 
     const fivebutton = document.createElement("button");
     fivebutton.innerHTML = '<i class="fa-solid fa-box-archive"></i> New Library (coming soon)';
     fivebutton.classList.add('floating-button');
-  
-    fivebutton.addEventListener("click", function() {
+
+    fivebutton.addEventListener("click", function () {
       browser.tabs.create({});
       initTabSidebarControl();
     });
-  
+
     browser.tabs.onActivated.addListener(() => {
       const floatingDiv = document.querySelector(".floating-div");
       if (floatingDiv) {
         floatingDiv.remove();
       }
     });
-  
+
     floatingDiv.appendChild(button);
     floatingDiv.appendChild(secondbutton);
     floatingDiv.appendChild(thirdbutton);
@@ -306,9 +318,9 @@ function initTabSidebarControl() {
     floatingDiv.appendChild(fivebutton);
     document.body.appendChild(floatingDiv);
 
-    document.addEventListener("mousedown", function(event) {
+    document.addEventListener("mousedown", function (event) {
       const isClickInside = floatingDiv.contains(event.target);
-  
+
       if (!isClickInside) {
         floatingDiv.remove();
       }
@@ -321,45 +333,45 @@ function initTabSidebarControl() {
   function archivetab() {
     const floatingDiv = document.createElement("div");
     floatingDiv.classList.add("floating-div");
-  
+
     const button = document.createElement("button");
     button.innerHTML = '<i class="fa-solid fa-box-archive"></i> Open Library (coming soon)';
     button.classList.add('floating-button');
-  
-    button.addEventListener("click", function() {
+
+    button.addEventListener("click", function () {
       browser.tabs.create({});
       initTabSidebarControl();
     });
-  
+
     const secondbutton = document.createElement("button");
     secondbutton.innerHTML = '<i class="fa-solid fa-clock-rotate-left"></i> Clear History';
     secondbutton.classList.add('floating-button');
-  
-    secondbutton.addEventListener("click", function() {
+
+    secondbutton.addEventListener("click", function () {
       browser.tabs.create({});
       initTabSidebarControl();
     });
-  
+
     browser.tabs.onActivated.addListener(() => {
       const floatingDiv = document.querySelector(".floating-div");
       if (floatingDiv) {
         floatingDiv.remove();
       }
     });
-  
+
     floatingDiv.appendChild(button);
     floatingDiv.appendChild(secondbutton);
     document.body.appendChild(floatingDiv);
-  
-    document.addEventListener("mousedown", function(event) {
+
+    document.addEventListener("mousedown", function (event) {
       const isClickInside = floatingDiv.contains(event.target);
-  
+
       if (!isClickInside) {
         floatingDiv.remove();
       }
     });
-  }  
-  
+  }
+
   const ArchiveButton = document.getElementById("archive");
   ArchiveButton.addEventListener("click", archivetab);
 
@@ -368,7 +380,7 @@ function initTabSidebarControl() {
     activeTabId = tabs.find((tab) => tab.active).id;
     renderItems(base);
   });
-  
+
   browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     const index = base.findIndex((t) => t.id === tabId);
     if (index !== -1) {
