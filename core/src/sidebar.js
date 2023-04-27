@@ -5,6 +5,7 @@ const searchInput = document.getElementById("search-input");
 const tabList = document.getElementById("tab-list");
 const newTabButton = document.getElementById("new-tab-button");
 const settingsButton = document.getElementById("settings");
+console.log("hello world")
 
 // Find the list of TLDs from IANA database
 let tlds = [];
@@ -153,13 +154,16 @@ function searchBar() {
   browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {
     const currentTab = tabs[0];
     let url;
-    if (query.startsWith("http://") || query.startsWith("https://")) {
-      url = query;
-    } else if (tlds.some((tld) => query.endsWith(tld))) {
-      url = "https://" + query;
-    } else {
-      url = "https://www.google.com/search?q=" + encodeURIComponent(query);
-    }
+    const isValidUrl = urlString=> {
+	  	var urlPattern = new RegExp('^(https?:\\/\\/)?'+ // validate protocol
+	    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // validate domain name
+	    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // validate OR ip (v4) address
+	    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // validate port and path
+	    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // validate query string
+	    '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
+	  return !!urlPattern.test(urlString);
+	  }
+    url = isValidUrl(query) ? query : "https://www.google.com/search?q=" + encodeURIComponent(query);
     browser.tabs.update(currentTab.id, {url: url});
     // Clear the search input
     searchInput.value = "";
