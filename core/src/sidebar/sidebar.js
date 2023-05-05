@@ -142,7 +142,7 @@ function searchBar() {
 
     if (isValidUrl(query)){
       if (!(query.startsWith('http'))){
-        url = "https://" +query; 
+        url = "http://" +query; 
       }else{url=query; }
     }else {
       url = "https://www.google.com/search?q=" + encodeURIComponent(query);
